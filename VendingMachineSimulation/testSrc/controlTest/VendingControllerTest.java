@@ -2,10 +2,9 @@ package controlTest;
 
 import java.util.ArrayList;
 
+import control.ChangeManager;
 import junit.framework.TestCase;
-import model.DispensibleItem;
-import model.UserAccountTeller;
-import model.VendingSlotInterface;
+import model.*;
 import modelTest.MockDispensedItemChute;
 import modelTest.MockUserBalance;
 import modelTest.MockVendingSlot;
@@ -16,188 +15,88 @@ import control.ShowInsertCoinTimer;
 import control.VendingController;
 import control.VendingControllerInterface;
 
+import static java.lang.Thread.sleep;
+
 public class VendingControllerTest extends TestCase {
+	MockDispensedItemChute dispensedItemChute;
+	ArrayList<VendingSlotInterface> vendingSlotCollection ;
+	UserAccountTeller userAccountTeller ;
+	MockVendingWindow vendingWindow;
+	MockVendingSlot slot;
+	VendingController vendingController;
+	MockUserBalance mockUserBalance;
+	MockChangeManager mockChangeManager;
+	ChangeManager changeManager;
+	CoinReturnTray coinReturnTray;
+	ChangeValueInterface changeValueInterface;
 
-	public void testImplementsVendingControllerInterface() throws Exception {
-		assertEquals(1, VendingController.class.getInterfaces().length);
-		assertSame(VendingControllerInterface.class, VendingController.class.getInterfaces()[0]);
+
+	@Override
+	protected void setUp() throws Exception {
+		dispensedItemChute = new MockDispensedItemChute();
+		vendingSlotCollection = new ArrayList<VendingSlotInterface>();
+		mockUserBalance = new MockUserBalance();
+		mockChangeManager =new MockChangeManager();
+
+		userAccountTeller = new UserAccountTeller(mockUserBalance,mockChangeManager);
+		vendingWindow = new MockVendingWindow();
+		slot = new MockVendingSlot();
+		changeManager = new ChangeManager(mockUserBalance,coinReturnTray,vendingWindow,changeValueInterface);
 	}
-
-	public void testGetters() throws Exception {
-		MockDispensedItemChute dispensedItemChute = new MockDispensedItemChute();
-		ArrayList<VendingSlotInterface> vendingSlotCollection = new ArrayList<VendingSlotInterface>();
-		UserAccountTeller userAccountTeller = new UserAccountTeller(new MockUserBalance(),
-				new MockChangeManager());
-		VendingWindowInterface vendingWindow = new VendingWindow();
-		VendingController vendingController = new VendingController(vendingSlotCollection,
+	//Vend Button to dispense Cola
+	public void testVendProductwithNoBalanceAndItemPriceToBeDisplayed() {
+		slot.setDispensibleItemToReturn(DispensibleItem.COLA);
+		slot.setProductQuantity(3);
+		vendingSlotCollection.add(slot);
+		vendingController = new VendingController(vendingSlotCollection,
 				dispensedItemChute, userAccountTeller, vendingWindow);
-
-		assertSame(vendingSlotCollection, vendingController.getVendingSlotCollection());
-		assertSame(dispensedItemChute, vendingController.getDispensedItemChute());
-		assertSame(userAccountTeller, vendingController.getUserAccountTeller());
-		assertSame(vendingWindow, vendingController.getVendingWindow());
-		assertSame(ShowInsertCoinTimer.class, vendingController.getTimer().getClass());
-		int expectedDelayForTimer = 1500;
-		assertEquals(expectedDelayForTimer, vendingController.getTimer().getDelay());
-	}
-
-	public void testVendProduct_VendsFromSlotASuccessfully() throws Exception {
-		ArrayList<VendingSlotInterface> vendingSlots = new ArrayList<VendingSlotInterface>();
-		MockVendingSlot vendingSlotA = new MockVendingSlot();
-		vendingSlotA.setProductQuantity(2);
-		vendingSlotA.setDispensibleItemToReturn(DispensibleItem.COLA);
-
-		vendingSlots.add(vendingSlotA);
-		vendingSlots.add(new MockVendingSlot());
-		vendingSlots.add(new MockVendingSlot());
-
-		MockUserBalance userBalance = new MockUserBalance();
-		String userBalanceString = "1.00";
-		userBalance.setBalanceValue(userBalanceString);
-
-		MockDispensedItemChute dispensedItemChute = new MockDispensedItemChute();
-		MockChangeManager changeManager = new MockChangeManager();
-		MockVendingWindow vendingWindow = new MockVendingWindow();
-		VendingController vendingController = new VendingController(vendingSlots,
-				dispensedItemChute, new UserAccountTeller(userBalance, changeManager),
-				vendingWindow);
-
-		int vendingButtonIndex = 0;
-		vendingController.vendProduct(vendingButtonIndex);
-
-		assertTrue(vendingSlotA.getGetProductQuantityWasCalled());
-		assertTrue(userBalance.getGetBalanceValueWasCalled());
-		assertTrue(vendingSlotA.getSubtractProductQuantityByOneWasCalled());
-		assertTrue(userBalance.getSubtractFundsWasCalled());
-		assertTrue(dispensedItemChute.getAddItemToChuteWasCalled());
-		assertTrue(changeManager.getMakeChangeWasCalled());
-		assertTrue(vendingWindow.getShowThankYouMessageWasCalled());
-		assertTrue(vendingController.getTimer().getActualTimer().isRunning());
-	}
-
-	public void testVendProduct_VendsFromSlotBSuccessfully() throws Exception {
-		ArrayList<VendingSlotInterface> vendingSlots = new ArrayList<VendingSlotInterface>();
-		MockVendingSlot vendingSlotB = new MockVendingSlot();
-		vendingSlotB.setProductQuantity(2);
-		vendingSlotB.setDispensibleItemToReturn(DispensibleItem.CHIPS);
-
-		vendingSlots.add(new MockVendingSlot());
-		vendingSlots.add(vendingSlotB);
-		vendingSlots.add(new MockVendingSlot());
-
-		MockUserBalance userBalance = new MockUserBalance();
-		String userBalanceString = "1.00";
-		userBalance.setBalanceValue(userBalanceString);
-
-		MockDispensedItemChute dispensedItemChute = new MockDispensedItemChute();
-		MockChangeManager changeManager = new MockChangeManager();
-		MockVendingWindow vendingWindow = new MockVendingWindow();
-		VendingController vendingController = new VendingController(vendingSlots,
-				dispensedItemChute, new UserAccountTeller(userBalance, changeManager),
-				vendingWindow);
-
-		int vendingButtonIndex = 1;
-		vendingController.vendProduct(vendingButtonIndex);
-
-		assertTrue(vendingSlotB.getGetProductQuantityWasCalled());
-		assertTrue(userBalance.getGetBalanceValueWasCalled());
-		assertTrue(vendingSlotB.getSubtractProductQuantityByOneWasCalled());
-		assertTrue(userBalance.getSubtractFundsWasCalled());
-		assertTrue(dispensedItemChute.getAddItemToChuteWasCalled());
-		assertTrue(changeManager.getMakeChangeWasCalled());
-		assertTrue(vendingWindow.getShowThankYouMessageWasCalled());
-		assertTrue(vendingController.getTimer().getActualTimer().isRunning());
-	}
-
-	public void testVendProduct_VendsFromSlotCSuccessfully() throws Exception {
-		ArrayList<VendingSlotInterface> vendingSlotList = new ArrayList<VendingSlotInterface>();
-		MockVendingSlot vendingSlotC = new MockVendingSlot();
-		vendingSlotC.setProductQuantity(2);
-		vendingSlotC.setDispensibleItemToReturn(DispensibleItem.CANDY);
-		vendingSlotList.add(new MockVendingSlot());
-		vendingSlotList.add(new MockVendingSlot());
-		vendingSlotList.add(vendingSlotC);
-
-		MockUserBalance userBalance = new MockUserBalance();
-		String userBalanceString = "1.00";
-		userBalance.setBalanceValue(userBalanceString);
-
-		MockDispensedItemChute dispensedItemChute = new MockDispensedItemChute();
-		MockChangeManager changeManager = new MockChangeManager();
-		MockVendingWindow vendingWindow = new MockVendingWindow();
-
-		VendingController vendingController = new VendingController(vendingSlotList,
-				dispensedItemChute, new UserAccountTeller(userBalance, changeManager),
-				vendingWindow);
-
-		int vendingButtonIndex = 2;
-		vendingController.vendProduct(vendingButtonIndex);
-
-		assertTrue(vendingSlotC.getGetProductQuantityWasCalled());
-		assertTrue(userBalance.getGetBalanceValueWasCalled());
-		assertTrue(vendingSlotC.getSubtractProductQuantityByOneWasCalled());
-		assertTrue(userBalance.getSubtractFundsWasCalled());
-		assertTrue(dispensedItemChute.getAddItemToChuteWasCalled());
-		assertTrue(changeManager.getMakeChangeWasCalled());
-		assertTrue(vendingWindow.getShowThankYouMessageWasCalled());
-		assertTrue(vendingController.getTimer().getActualTimer().isRunning());
-	}
-
-	public void testVendProduct_UnsuccessfulDueToZeroQuantity() throws Exception {
-		ArrayList<VendingSlotInterface> vendingSlots = new ArrayList<VendingSlotInterface>();
-		MockVendingSlot vendingSlotA = new MockVendingSlot();
-		vendingSlotA.setProductQuantity(0);
-		vendingSlotA.setDispensibleItemToReturn(DispensibleItem.COLA);
-		vendingSlots.add(vendingSlotA);
-
-		MockUserBalance userBalance = new MockUserBalance();
-		MockDispensedItemChute dispensedItemChute = new MockDispensedItemChute();
-		MockChangeManager changeManager = new MockChangeManager();
-		MockVendingWindow vendingWindow = new MockVendingWindow();
-		VendingController vendingController = new VendingController(vendingSlots,
-				dispensedItemChute, new UserAccountTeller(userBalance, changeManager),
-				vendingWindow);
-		int vendingButtonIndex = 0;
-		vendingController.vendProduct(vendingButtonIndex);
-
-		assertTrue(vendingSlotA.getGetProductQuantityWasCalled());
-		assertTrue(vendingWindow.getShowSoldOutMessageWasCalled());
-		assertTrue(vendingController.getTimer().getActualTimer().isRunning());
-		assertFalse(userBalance.getGetBalanceValueWasCalled());
-		assertFalse(vendingSlotA.getSubtractProductQuantityByOneWasCalled());
-		assertFalse(userBalance.getSubtractFundsWasCalled());
-		assertFalse(dispensedItemChute.getAddItemToChuteWasCalled());
-		assertFalse(changeManager.getMakeChangeWasCalled());
-	}
-
-	public void testVendProduct_UnsuccessfulDueToInsufficientBalance() throws Exception {
-		ArrayList<VendingSlotInterface> vendingSlots = new ArrayList<VendingSlotInterface>();
-		MockVendingSlot vendingSlotC = new MockVendingSlot();
-		vendingSlotC.setProductQuantity(2);
-		vendingSlotC.setDispensibleItemToReturn(DispensibleItem.CANDY);
-		vendingSlots.add(new MockVendingSlot());
-		vendingSlots.add(new MockVendingSlot());
-		vendingSlots.add(vendingSlotC);
-
-		MockUserBalance userBalance = new MockUserBalance();
-		userBalance.setBalanceValue(".10");
-
-		MockDispensedItemChute dispensedItemChute = new MockDispensedItemChute();
-		MockChangeManager changeManager = new MockChangeManager();
-		MockVendingWindow vendingWindow = new MockVendingWindow();
-		VendingController vendingController = new VendingController(vendingSlots,
-				dispensedItemChute, new UserAccountTeller(userBalance, changeManager),
-				vendingWindow);
-		int vendingButtonIndex = 2;
-		vendingController.vendProduct(vendingButtonIndex);
-
-		assertTrue(vendingSlotC.getGetProductQuantityWasCalled());
-		assertTrue(userBalance.getGetBalanceValueWasCalled());
+		vendingController.vendProduct(0);
 		assertTrue(vendingWindow.getShowPriceMessageWasCalled());
-		assertTrue(vendingController.getTimer().getActualTimer().isRunning());
-		assertFalse(vendingSlotC.getSubtractProductQuantityByOneWasCalled());
-		assertFalse(userBalance.getSubtractFundsWasCalled());
-		assertFalse(dispensedItemChute.getAddItemToChuteWasCalled());
-		assertFalse(changeManager.getMakeChangeWasCalled());
+		assertEquals(0.0, userAccountTeller.getUserBalance().getBalanceValue()
+		);
 	}
+	public void testVendProductwithInsufficentMoneyforProductItemPriceToBeDisplayed() throws InterruptedException {
+		mockUserBalance.setBalanceValue("0.25");
+		slot.setDispensibleItemToReturn(DispensibleItem.COLA);
+		slot.setProductQuantity(3);
+		vendingSlotCollection.add(slot);
+		vendingController = new VendingController(vendingSlotCollection,
+				dispensedItemChute, userAccountTeller, vendingWindow);
+		vendingController.vendProduct(0);
+		assertTrue(vendingWindow.getShowPriceMessageWasCalled());
+		Thread.sleep(5000);
+		assertTrue(vendingWindow.getShowInsertCoinsMessageWasCalled());
+		assertTrue(mockUserBalance.getGetBalanceValueWasCalled());
+		assertTrue(slot.getGetProductQuantityWasCalled());
+
+	}
+
+	public void testVendProduct_VendsFromSlotAWithExactMoneyforProduct()
+	{
+		mockUserBalance.setBalanceValue("1.00");
+		slot.setDispensibleItemToReturn(DispensibleItem.COLA);
+		slot.setProductQuantity(1);
+		vendingSlotCollection.add(slot);
+		vendingController = new VendingController(vendingSlotCollection,
+				dispensedItemChute, userAccountTeller, vendingWindow);
+		vendingController.vendProduct(0);
+		// 1) Display message should be thank you
+		// 2) User Balance should be 0
+		// 3) change balance should be 0
+		// 4) After timeout Display message should change to Insert Coin
+		// 5) Check if Cola is dispensed.
+
+		assertTrue(vendingWindow.getShowThankYouMessageWasCalled());
+		assertEquals(0.0,mockUserBalance.getBalanceValue());
+		//Todo Below asserts fails
+		assertEquals(0.0, changeManager.getCoinReturnTray().getAllReturnTrayCoins());
+		fail();
+
+	}
+
+
+
+
+
+
 }

@@ -15,11 +15,13 @@ public class MockCoinReturnTray implements CoinReturnTrayInterface {
 	private boolean getDimesInTrayWasCalled;
 	private boolean getNickelsInTrayWasCalled;
 	private boolean getPenniesInTrayWasCalled;
+	private boolean getAllReturnTrayCoinsCalled;
 	private final ArrayList<InsertedCoinPiece> quartersInTray;
 	private final ArrayList<InsertedCoinPiece> dimesInTray;
 	private final ArrayList<InsertedCoinPiece> nickelsInTray;
 	private final ArrayList<InsertedCoinPiece> penniesInTray;
 	private final ArrayList<InsertedCoinPiece> slugsInTray;
+	private final ArrayList<InsertedCoinPiece> allReturnTrayCoins;
 
 	public MockCoinReturnTray() {
 		this.numberOfTimesAddInsertedCoinToReturnTrayWasCalled = 0;
@@ -28,11 +30,13 @@ public class MockCoinReturnTray implements CoinReturnTrayInterface {
 		this.getDimesInTrayWasCalled = false;
 		this.getNickelsInTrayWasCalled = false;
 		this.getPenniesInTrayWasCalled = false;
+		this.getAllReturnTrayCoinsCalled = false;
 		this.quartersInTray = new ArrayList<InsertedCoinPiece>();
 		this.dimesInTray = new ArrayList<InsertedCoinPiece>();
 		this.nickelsInTray = new ArrayList<InsertedCoinPiece>();
 		this.penniesInTray = new ArrayList<InsertedCoinPiece>();
 		this.slugsInTray = new ArrayList<InsertedCoinPiece>();
+		this.allReturnTrayCoins = new ArrayList<InsertedCoinPiece>();
 	}
 
 	@Override
@@ -88,6 +92,11 @@ public class MockCoinReturnTray implements CoinReturnTrayInterface {
 		return this.penniesInTray;
 	}
 
+	@Override
+	public ArrayList<InsertedCoinPiece> getAllReturnTrayCoins() {
+		this.getAllReturnTrayCoinsCalled = true;
+		return this.allReturnTrayCoins;
+	}
 	public void addToSlugsInTray(InsertedCoinPiece slugToAdd) {
 		this.slugsInTray.add(slugToAdd);
 	}

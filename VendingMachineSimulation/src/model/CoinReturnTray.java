@@ -71,6 +71,7 @@ public class CoinReturnTray implements CoinReturnTrayInterface {
 		return slugsInTray;
 	}
 
+	@Override
 	public ArrayList<InsertedCoinPiece> getAllReturnTrayCoins() {
 		return this.allReturnTrayCoins;
 	}

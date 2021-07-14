@@ -17,4 +17,6 @@ public interface CoinReturnTrayInterface {
 	public abstract ArrayList<InsertedCoinPiece> getNickelsInTray();
 
 	public abstract ArrayList<InsertedCoinPiece> getPenniesInTray();
+
+	public abstract ArrayList<InsertedCoinPiece> getAllReturnTrayCoins();
 }
