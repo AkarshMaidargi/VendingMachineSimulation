@@ -80,6 +80,11 @@ public class ChangeManager implements ChangeManagerInterface {
 	}
 
 	@Override
+	public ChangeValueInterface getChangeValue(){
+		return this.changeValue;
+	}
+
+	@Override
 	public CoinReturnTrayInterface getCoinReturnTray() {
 		return this.coinReturnTray;
 	}

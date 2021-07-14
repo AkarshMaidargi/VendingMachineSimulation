@@ -89,9 +89,7 @@ public class VendingControllerTest extends TestCase {
 		assertTrue(vendingWindow.getShowThankYouMessageWasCalled());
 		assertEquals(0.0,mockUserBalance.getBalanceValue());
 		//Todo Below asserts fails
-		assertEquals(0.0, changeManager.getCoinReturnTray().getAllReturnTrayCoins());
-		fail();
-
+		assertEquals("0.0", changeManager.getChangeValue().getTotalAsFormattedString());
 	}
 
 

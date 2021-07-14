@@ -1,5 +1,6 @@
 package controlTest;
 
+import model.ChangeValueInterface;
 import model.CoinReturnTrayInterface;
 import view.VendingWindowInterface;
 import control.ChangeManagerInterface;
@@ -12,6 +13,8 @@ public class MockChangeManager implements ChangeManagerInterface {
 	private boolean getCoinReturnTrayWasCalled;
 	private VendingWindowInterface vendingWindow;
 	private boolean getVendingWindowWasCalled;
+	private boolean getChangeValueCalled;
+	private ChangeValueInterface changeValue;
 
 	public MockChangeManager() {
 		this.makeChangeWasCalled = false;
@@ -19,11 +22,19 @@ public class MockChangeManager implements ChangeManagerInterface {
 		this.getVendingWindowWasCalled = false;
 		this.coinReturnTray = null;
 		this.vendingWindow = null;
+		this.getChangeValueCalled = false;
+		this.changeValue = null;
 	}
 
 	@Override
 	public void makeChange() {
 		this.makeChangeWasCalled = true;
+	}
+
+	@Override
+	public ChangeValueInterface getChangeValue() {
+		this.getChangeValueCalled = true;
+		return this.changeValue;
 	}
 
 	@Override
