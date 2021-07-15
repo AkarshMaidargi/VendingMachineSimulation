@@ -27,7 +27,7 @@ import control.SlugButtonListener;
 import control.VendingController;
 
 public class ApplicationLauncher {
-
+// Adarsh added Comment
 	public static void main(String[] args) {
 		VendingWindow vendingWindow = new VendingWindow();
 		vendingWindow.setVisible(true);
