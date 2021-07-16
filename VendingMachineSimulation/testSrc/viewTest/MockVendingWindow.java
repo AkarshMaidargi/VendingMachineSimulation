@@ -2,6 +2,9 @@ package viewTest;
 
 import view.VendingWindowInterface;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MockVendingWindow implements VendingWindowInterface {
 
 	private boolean showPriceMessageWasCalled;
@@ -19,6 +22,7 @@ public class MockVendingWindow implements VendingWindowInterface {
 	private int numberOfTimesShowReturnedQuarterAmountWasCalled;
 	private int numberOfTimesShowReturnedDimeAmountWasCalled;
 	private int numberOfTimesShowReturnedNickelAmountWasCalled;
+	private List<String> DisplayMessages;
 
 	public MockVendingWindow() {
 		this.showPriceMessageWasCalled = false;
@@ -36,36 +40,43 @@ public class MockVendingWindow implements VendingWindowInterface {
 		this.numberOfTimesShowReturnedQuarterAmountWasCalled = 0;
 		this.numberOfTimesShowReturnedDimeAmountWasCalled = 0;
 		this.numberOfTimesShowReturnedNickelAmountWasCalled = 0;
+		this.DisplayMessages = new ArrayList<String>();
 	}
 
 	@Override
 	public void showPriceMessage(String priceToDisplay) {
 		this.showPriceMessageWasCalled = true;
+		this.DisplayMessages.add(priceToDisplay);
 	}
 
 	@Override
 	public void showInsertCoinsMessage() {
 		this.showInsertCoinsMessageWasCalled = true;
+		this.DisplayMessages.add("Insert Coin");
 	}
 
 	@Override
 	public void showThankYouMessage() {
 		this.showThankYouMessageWasCalled = true;
+		this.DisplayMessages.add("Thank You");
 	}
 
 	@Override
 	public void showSoldOutMessage() {
 		this.showSoldOutMessageWasCalled = true;
+		this.DisplayMessages.add("Sold Out");
 	}
 
 	@Override
 	public void showUpdatedUserBalance(String balanceToDisplay) {
 		this.showUpdatedUserBalanceWasCalled = true;
+		this.DisplayMessages.add(balanceToDisplay);
 	}
 
 	@Override
 	public void showUpdatedChangeDisplay(String changeBalanceToDisplay) {
 		this.showUpdatedChangeDisplayWasCalled = true;
+		this.DisplayMessages.add(changeBalanceToDisplay);
 		this.numberOfTimesShowUpdatedChangeDisplayWasCalled++;
 	}
 
@@ -155,5 +166,9 @@ public class MockVendingWindow implements VendingWindowInterface {
 
 	public int getNumberOfTimesShowReturnedNickelAmountWasCalled() {
 		return numberOfTimesShowReturnedNickelAmountWasCalled;
+	}
+
+	public List<String> getDisplayMessages() {
+		return this.DisplayMessages;
 	}
 }

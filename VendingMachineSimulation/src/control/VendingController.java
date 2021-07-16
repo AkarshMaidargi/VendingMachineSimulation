@@ -46,6 +46,8 @@ public class VendingController implements VendingControllerInterface {
 				this.userAccountTeller.getChangeManager().makeChange();
 				this.vendingWindow.showThankYouMessage();
 				this.timerForShowingInsertCoins.startTimer();
+				this.vendingWindow.showInsertCoinsMessage();
+				this.dispensedItemChute.getDispensedItems();
 
 			} else {
 				String priceToDisplay = formatItemPriceAsString(itemFromSlot);
